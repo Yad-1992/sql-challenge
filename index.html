@@ -1,177 +1,179 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Register: Free SQL Coding Challenge</title>
-    <style> 
-        body { 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-            max-width: 500px; 
-            margin: 50px auto; 
-            padding: 20px; 
-            background-color: #f4f4f9; 
-        }
-        .container { 
-            background: white; 
-            padding: 30px; 
-            border-radius: 10px; 
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); 
-        }
-        h1 { 
-            text-align: center; 
-            color: #333; 
-            margin-bottom: 10px; 
-        }
-        p { 
-            text-align: center; 
-            color: #666; 
-            margin-bottom: 30px; 
-        }
-        form { 
-            display: flex; 
-            flex-direction: column; 
-            gap: 15px; 
-        }
-        label { 
-            font-weight: bold; 
-            color: #555; 
-            margin-bottom: 5px; 
-        }
-        input, select { 
-            padding: 12px; 
-            border: 1px solid #ddd; 
-            border-radius: 5px; 
-            font-size: 16px; 
-        }
-        input:focus, select:focus { 
-            outline: none; 
-            border-color: #4CAF50; 
-            box-shadow: 0 0 5px rgba(76, 175, 80, 0.3); 
-        }
-        button { 
-            padding: 12px; 
-            background: #4CAF50; 
-            color: white; 
-            border: none; 
-            border-radius: 5px; 
-            font-size: 16px; 
-            cursor: pointer; 
-            transition: background 0.3s; 
-        }
-        button:hover { 
-            background: #45a049; 
-        }
-        button:disabled { 
-            background: #ccc; 
-            cursor: not-allowed; 
-        }
-        #message { 
-            margin-top: 15px; 
-            padding: 10px; 
-            border-radius: 5px; 
-            text-align: center; 
-            display: none; 
-        }
-        .success { 
-            background: #d4edda; 
-            color: #155724; 
-            border: 1px solid #c3e6cb; 
-        }
-        .error { 
-            background: #f8d7da; 
-            color: #721c24; 
-            border: 1px solid #f5c6cb; 
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SQL Challenge Portal</title>
+  <style>
+    body { font-family: 'Segoe UI', sans-serif; max-width: 800px; margin: 40px auto; padding: 20px; background: #f4f4f9; }
+    .card { background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+    h1 { text-align: center; color: #333; }
+    p { color: #555; }
+    label { font-weight: bold; color: #444; }
+    input, select, textarea { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 5px; font-size: 16px; margin-bottom: 15px; }
+    input:focus, select:focus, textarea:focus { outline: none; border-color: #4CAF50; box-shadow: 0 0 5px rgba(76,175,80,0.3); }
+    button { padding: 12px 24px; background: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; }
+    button:hover:not(:disabled) { background: #45a049; }
+    button:disabled { background: #ccc; cursor: not-allowed; }
+    #message { margin-top: 15px; padding: 10px; border-radius: 5px; text-align: center; display: none; }
+    .success { background: #d4edda; color: #155724; }
+    .error { background: #f8d7da; color: #721c24; }
+    .warning { background: #fff3cd; color: #856404; }
+    #challengeSection { display: none; }
+    #timer { font-size: 1.8em; color: #e74c3c; text-align: center; margin: 10px 0; }
+  </style>
 </head>
 <body>
-   <div class="container">
-        <h1>Free SQL Coding Challenge</h1>
-        <p>Join our 5-minute timed SQL challenge for data analysts. Enroll now—no cost!</p>
-        
-        <form id="regForm">
-            <label for="name">Full Name *</label>
-            <input type="text" id="name" required minlength="2">
-            
-            <label for="email">Email Address *</label>
-            <input type="email" id="email" required>
-            
-            <label for="skillLevel">SQL Skill Level *</label>
-            <select id="skillLevel" required>
-                <option value="">Select...</option>
-                <option value="beginner">Beginner (Basic SELECT, WHERE)</option>
-                <option value="intermediate">Intermediate (JOINs, GROUP BY)</option>
-                <option value="advanced">Advanced (Windows, Subqueries)</option>
-            </select>
-            
-            <label>
-                <input type="checkbox" id="terms"> I agree to the terms and receive challenge updates.
-            </label>
-            
-            <button type="submit" id="submitBtn">Register Free</button>
-        </form>
-        
-        <div id="message"></div>
+  <div class="card" id="registerSection">
+    <h1>Free SQL Coding Challenge</h1>
+    <p>Join our 5-min SQL challenge. Register below.</p>
+
+    <form id="regForm">
+      <label>Full Name *</label>
+      <input type="text" id="name" required>
+
+      <label>Email *</label>
+      <input type="email" id="email" required>
+
+      <label>SQL Skill Level *</label>
+      <select id="skillLevel" required>
+        <option value="">Select...</option>
+        <option value="beginner">Beginner</option>
+        <option value="intermediate">Intermediate</option>
+        <option value="advanced">Advanced</option>
+      </select>
+
+      <label><input type="checkbox" id="terms" required> I agree to terms.</label>
+
+      <button type="submit" id="submitBtn">Register Free</button>
+    </form>
+    <div id="message"></div>
+  </div>
+
+  <!-- Challenge Section -->
+  <div class="card" id="challengeSection">
+    <h1>SQL Coding Challenge</h1>
+    <p>Time Left: <span id="timer">05:00</span></p>
+    <p>User ID: <span id="userId"></span></p>
+
+    <div id="problem">
+      <h3>Challenge: Average Sales by Region</h3>
+      <p>Write a SQL query to calculate average sales per region (rounded to 1 decimal).</p>
+      <pre>Table: sales
+region | amount
+North  | 100
+South  | 150
+North  | 200</pre>
+      <pre>Expected:
+region | avg_sales
+North  | 150.0
+South  | 150.0</pre>
     </div>
 
-    <script>
-        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbytN4ip6NzJxU1RIB1PiM9_aaBQrzHxBCF17MU5VYO-uTeh8OM8L30nIdVvXzXwFQI1mw/exec'; // Replace with your Google Apps Script Web App URL
-        const form = document.getElementById('regForm');
-        const submitBtn = document.getElementById('submitBtn');
-        const message = document.getElementById('message');
+    <textarea id="code" placeholder="Write your SQL query here..."></textarea>
+    <button id="submitCode">Submit Query</button>
+    <div id="challengeMsg"></div>
+  </div>
 
-        form.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            submitBtn.disabled = true;
-            submitBtn.textContent = 'Registering...';
+  <script>
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbytN4ip6NzJxU1RIB1PiM9_aaBQrzHxBCF17MU5VYO-uTeh8OM8L30nIdVvXzXwFQI1mw/exec';
 
-            // Basic validation
-            const email = document.getElementById('email').value;
-            if (!email.includes('@')) {
-                showMessage('Please enter a valid email.', 'error');
-                return;
-            }
+    const regForm = document.getElementById('regForm');
+    const msg = document.getElementById('message');
+    const regBtn = document.getElementById('submitBtn');
+    const regSec = document.getElementById('registerSection');
+    const challengeSec = document.getElementById('challengeSection');
 
-            const formData = {
-                type: 'register',
-                name: document.getElementById('name').value,
-                email: email,
-                skillLevel: document.getElementById('skillLevel').value,
-                terms: document.getElementById('terms').checked
-            };
+    let userId = "";
+    let timerEl = document.getElementById('timer');
+    let timeLeft = 5 * 60;
+    let interval;
 
-            try {
-                const response = await fetch(SCRIPT_URL, {
-                    method: 'POST',
-                    body: JSON.stringify(formData),
-                    headers: { 'Content-Type': 'application/json' }
-                });
-                const result = await response.json();
-                
-                if (result.success) {
-                    showMessage(`Success! Welcome, ${formData.name}. Check your email for the challenge link (User ID: ${result.userId}). Starts Oct 24, 2025.`, 'success');
-                    form.reset();
-                } else {
-                    throw new Error(result.message || 'Registration failed');
-                }
-            } catch (err) {
-                showMessage(`Error: ${err.message}. Please try again.`, 'error');
-            } finally {
-                submitBtn.disabled = false;
-                submitBtn.textContent = 'Register Free';
-            }
+    regForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      regBtn.disabled = true;
+      regBtn.textContent = 'Registering...';
+      const data = {
+        type: 'register',
+        name: document.getElementById('name').value.trim(),
+        email: document.getElementById('email').value.trim(),
+        skillLevel: document.getElementById('skillLevel').value,
+        terms: document.getElementById('terms').checked
+      };
+
+      try {
+        const res = await fetch(SCRIPT_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
         });
+        const result = await res.json();
+        if (result.success) {
+          userId = result.userId;
+          showMsg('Registration successful! Starting challenge...', 'success');
+          setTimeout(() => startChallenge(userId), 1500);
+        } else throw new Error(result.message);
+      } catch (err) {
+        showMsg('Error: ' + err.message, 'error');
+      } finally {
+        regBtn.disabled = false;
+        regBtn.textContent = 'Register Free';
+      }
+    });
 
-        function showMessage(text, type) {
-            message.textContent = text;
-            message.className = type;
-            message.style.display = 'block';
-            setTimeout(() => { message.style.display = 'none'; }, 5000);
+    function showMsg(text, type) {
+      msg.textContent = text;
+      msg.className = type;
+      msg.style.display = 'block';
+      setTimeout(() => msg.style.display = 'none', 4000);
+    }
+
+    function startChallenge(uid) {
+      regSec.style.display = 'none';
+      challengeSec.style.display = 'block';
+      document.getElementById('userId').textContent = uid;
+      startTimer();
+    }
+
+    function startTimer() {
+      interval = setInterval(() => {
+        const m = Math.floor(timeLeft / 60);
+        const s = timeLeft % 60;
+        timerEl.textContent = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+        if (timeLeft <= 0) {
+          clearInterval(interval);
+          document.getElementById('code').disabled = true;
+          document.getElementById('submitCode').disabled = true;
+          showChallengeMsg('Time up! Submission closed.', 'warning');
         }
-    </script>
+        timeLeft--;
+      }, 1000);
+    }
+
+    document.getElementById('submitCode').addEventListener('click', async () => {
+      const code = document.getElementById('code').value.trim();
+      if (!code) return showChallengeMsg('Write SQL query before submitting.', 'error');
+      try {
+        const res = await fetch(SCRIPT_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ type: 'submit', userId, code })
+        });
+        const result = await res.json();
+        showChallengeMsg(result.message, result.success ? 'success' : 'error');
+        clearInterval(interval);
+        document.getElementById('submitCode').disabled = true;
+      } catch (err) {
+        showChallengeMsg('Error: ' + err.message, 'error');
+      }
+    });
+
+    function showChallengeMsg(text, type) {
+      const el = document.getElementById('challengeMsg');
+      el.textContent = text;
+      el.className = type;
+      el.style.display = 'block';
+    }
+  </script>
 </body>
 </html>
-
-
-
