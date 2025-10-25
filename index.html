@@ -3,30 +3,34 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SQL Challenge Portal</title>
+  <title>Free SQL Coding Challenge - Oct 2025</title>
   <style>
     body { font-family: 'Segoe UI', sans-serif; max-width: 800px; margin: 40px auto; padding: 20px; background: #f4f4f9; }
     .card { background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
     h1 { text-align: center; color: #333; }
     p { color: #555; }
     label { font-weight: bold; color: #444; }
-    input, select, textarea { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 5px; font-size: 16px; margin-bottom: 15px; }
+    input, select, textarea { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 5px; font-size: 16px; margin-bottom: 15px; box-sizing: border-box; }
     input:focus, select:focus, textarea:focus { outline: none; border-color: #4CAF50; box-shadow: 0 0 5px rgba(76,175,80,0.3); }
-    button { padding: 12px 24px; background: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; }
+    button { padding: 12px 24px; background: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; width: 100%; }
     button:hover:not(:disabled) { background: #45a049; }
     button:disabled { background: #ccc; cursor: not-allowed; }
-    #message { margin-top: 15px; padding: 10px; border-radius: 5px; text-align: center; display: none; }
+    #message, #challengeMsg { margin-top: 15px; padding: 10px; border-radius: 5px; text-align: center; display: none; }
     .success { background: #d4edda; color: #155724; }
     .error { background: #f8d7da; color: #721c24; }
     .warning { background: #fff3cd; color: #856404; }
+    #registerSection { display: block; }
     #challengeSection { display: none; }
     #timer { font-size: 1.8em; color: #e74c3c; text-align: center; margin: 10px 0; }
+    pre { background: #f8f9fa; padding: 10px; border-radius: 5px; overflow-x: auto; }
+    #userId { font-weight: bold; color: #4CAF50; }
   </style>
 </head>
 <body>
+  <!-- Registration Section -->
   <div class="card" id="registerSection">
     <h1>Free SQL Coding Challenge</h1>
-    <p>Join our 5-min SQL challenge. Register below.</p>
+    <p>Join our 5-min SQL challenge (Oct 25, 2025). Register below to start!</p>
 
     <form id="regForm">
       <label>Full Name *</label>
@@ -43,9 +47,9 @@
         <option value="advanced">Advanced</option>
       </select>
 
-      <label><input type="checkbox" id="terms" required> I agree to terms.</label>
+      <label><input type="checkbox" id="terms" required> I agree to terms and conditions.</label>
 
-      <button type="submit" id="submitBtn">Register Free</button>
+      <button type="submit" id="submitBtn">Register & Start Challenge</button>
     </form>
     <div id="message"></div>
   </div>
@@ -70,13 +74,14 @@ North  | 150.0
 South  | 150.0</pre>
     </div>
 
-    <textarea id="code" placeholder="Write your SQL query here..."></textarea>
+    <textarea id="code" rows="10" placeholder="Write your SQL query here... (e.g., SELECT region, ROUND(AVG(amount), 1) AS avg_sales FROM sales GROUP BY region;)"></textarea>
     <button id="submitCode">Submit Query</button>
     <div id="challengeMsg"></div>
   </div>
 
   <script>
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzA5DFyb94gWeMyesOGeMk7Zrr8HE6gTfVU5Br_5BIBAC9zaBUKPPhIwHfwDal666f4/exec';
+    // ⚠️ UPDATE THIS: Your GAS Web App URL (from Deploy > Copy Web app URL)
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzA5DFyb94gWeMyesOGeMk7Zrr8HE6gTfVU5Br_5BIBAC9zaBUKPPhIwHfwDal666f4/exec';  // e.g., AKfycbyl.../exec
 
     const regForm = document.getElementById('regForm');
     const msg = document.getElementById('message');
@@ -84,21 +89,25 @@ South  | 150.0</pre>
     const regSec = document.getElementById('registerSection');
     const challengeSec = document.getElementById('challengeSection');
 
-    let userId = "";
-    let timerEl = document.getElementById('timer');
-    let timeLeft = 5 * 60;
+    let userId = '';
+    let timeLeft = 5 * 60;  // 5 minutes in seconds
     let interval;
 
+    // Registration Submit
     regForm.addEventListener('submit', async (e) => {
       e.preventDefault();
+      if (!document.getElementById('terms').checked) {
+        showMsg('Please agree to terms.', 'error');
+        return;
+      }
       regBtn.disabled = true;
       regBtn.textContent = 'Registering...';
+
       const data = {
         type: 'register',
         name: document.getElementById('name').value.trim(),
         email: document.getElementById('email').value.trim(),
-        skillLevel: document.getElementById('skillLevel').value,
-        terms: document.getElementById('terms').checked
+        skillLevel: document.getElementById('skillLevel').value
       };
 
       try {
@@ -107,17 +116,21 @@ South  | 150.0</pre>
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(data)
         });
+        if (!res.ok) throw new Error(`HTTP ${res.status}: ${res.statusText}`);
         const result = await res.json();
         if (result.success) {
           userId = result.userId;
           showMsg('Registration successful! Starting challenge...', 'success');
           setTimeout(() => startChallenge(userId), 1500);
-        } else throw new Error(result.message);
+        } else {
+          throw new Error(result.message || 'Registration failed');
+        }
       } catch (err) {
-        showMsg('Error: ' + err.message, 'error');
+        console.error('Fetch error:', err);  // For debugging
+        showMsg('Error: ' + err.message + '. Check console.', 'error');
       } finally {
         regBtn.disabled = false;
-        regBtn.textContent = 'Register Free';
+        regBtn.textContent = 'Register & Start Challenge';
       }
     });
 
@@ -139,7 +152,7 @@ South  | 150.0</pre>
       interval = setInterval(() => {
         const m = Math.floor(timeLeft / 60);
         const s = timeLeft % 60;
-        timerEl.textContent = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+        document.getElementById('timer').textContent = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
         if (timeLeft <= 0) {
           clearInterval(interval);
           document.getElementById('code').disabled = true;
@@ -150,21 +163,42 @@ South  | 150.0</pre>
       }, 1000);
     }
 
+    // Challenge Submit
     document.getElementById('submitCode').addEventListener('click', async () => {
       const code = document.getElementById('code').value.trim();
-      if (!code) return showChallengeMsg('Write SQL query before submitting.', 'error');
+      if (!code) {
+        showChallengeMsg('Write SQL query before submitting.', 'error');
+        return;
+      }
+      if (timeLeft <= 0) {
+        showChallengeMsg('Time expired!', 'warning');
+        return;
+      }
+      document.getElementById('submitCode').disabled = true;
+      document.getElementById('submitCode').textContent = 'Submitting...';
+
+      const data = {
+        type: 'submit',
+        userId,
+        code
+      };
+
       try {
         const res = await fetch(SCRIPT_URL, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ type: 'submit', userId, code })
+          body: JSON.stringify(data)
         });
+        if (!res.ok) throw new Error(`HTTP ${res.status}: ${res.statusText}`);
         const result = await res.json();
         showChallengeMsg(result.message, result.success ? 'success' : 'error');
         clearInterval(interval);
-        document.getElementById('submitCode').disabled = true;
       } catch (err) {
-        showChallengeMsg('Error: ' + err.message, 'error');
+        console.error('Submit error:', err);
+        showChallengeMsg('Error: ' + err.message + '. Check console.', 'error');
+      } finally {
+        document.getElementById('submitCode').disabled = false;
+        document.getElementById('submitCode').textContent = 'Submit Query';
       }
     });
 
@@ -177,17 +211,3 @@ South  | 150.0</pre>
   </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
